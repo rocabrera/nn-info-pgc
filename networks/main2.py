@@ -13,8 +13,7 @@ from torch.utils.data import DataLoader
 
 
 # Prepare Dataset
-# df = pd.read_excel(os.path.join("data", "Dry_Bean_Dataset.xlsx"),skipfooter=93611)
-pd.read_csv
+df = pd.read_excel(os.path.join("data", "Dry_Bean_Dataset.xlsx"),skipfooter=3611)
 y = df["Class"].astype("category").cat.codes
 X = df.drop(columns=["Class"])
 
@@ -60,7 +59,7 @@ def train_model(train_dl, model):
             
             optimizer.zero_grad() # clear the gradients
             yhat = model(inputs_in_device) # compute the model output
-
+            print(yhat.shape)
             loss = criterion(yhat, targets_in_device) # calculate loss
             loss.backward() # credit assignment
             optimizer.step() # update model weights
