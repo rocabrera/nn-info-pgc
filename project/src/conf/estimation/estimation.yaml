@@ -1,0 +1,5 @@
+discrete:
+  bins: 10
+
+continuos:
+  kernel: "gaussian"

@@ -1,0 +1,6 @@
+defaults:
+  - architecture: architecture
+  - dataset: dataset
+  - estimation: estimation
+  - folders: folders
+  - _self_

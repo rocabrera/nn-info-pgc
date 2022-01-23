@@ -2,7 +2,7 @@ import os
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-from custom_dataset import BeansDataset
+from project.src.custom_dataset import BeansDataset
 
 from models.model import MLP
 from models.architecture import ModelArchitecture
