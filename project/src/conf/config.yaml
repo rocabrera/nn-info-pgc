@@ -4,3 +4,6 @@ defaults:
   - estimation: estimation
   - folders: folders
   - _self_
+
+problem:
+  n_init_random: 50
