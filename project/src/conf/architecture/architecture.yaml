@@ -1,5 +1,6 @@
 epochs: 2000
-learning_rate: 0.1
+learning_rate: 0.05
 hidden_layer_sizes:
+  - 10
   - 5
   - 3

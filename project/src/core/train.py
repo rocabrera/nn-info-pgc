@@ -84,7 +84,7 @@ def train_model(train_dl, model, n_epochs, learning_rate, rand_init_number, n_bi
             #     accur.append(acc)
             #     print("epoch {}\tloss : {}\t accuracy : {}".format(epoch, loss, acc))
 
-def crete_result_organization(folder_results:str, filename:str):
+def crete_result_path(folder_results:str, filename:str):
 
     Path(folder_results).mkdir(parents=True, exist_ok=True)
 

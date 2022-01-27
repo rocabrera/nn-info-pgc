@@ -1,5 +1,7 @@
 data: "${hydra:runtime.cwd}/data"
-results: "${hydra:runtime.cwd}/results"
+results: 
+  discrete: "${hydra:runtime.cwd}/results/discrete"
+  continuos: "${hydra:runtime.cwd}/results/continuos"
   
 
 

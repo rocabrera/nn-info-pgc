@@ -5,7 +5,7 @@ import torch
 from hydra.core.config_store import ConfigStore
 from conf.config import Project
 
-from core.train import (crete_result_organization,
+from core.train import (crete_result_path,
                         define_model_architecture, 
                         train_model)
 
@@ -26,12 +26,17 @@ def main(cfg: Project) -> None:
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    filename = "resultados_{}_{}_{}_{}.csv".format(architecture.epochs,
-                                                   architecture.hidden_layer_sizes,
-                                                   architecture.learning_rate,
-                                                   dataset.sample_size)
+    print("Executing experiment")
+    print(f"Number of epochs: {architecture.epochs}")
+    print(f"Learning rate: {architecture.learning_rate}")
+    print(f"Architecture: {architecture.hidden_layer_sizes}")
+    print(f"Dataset: {dataset.file}")
 
-    result_path = crete_result_organization(folders.results, filename)
+    filename = "discrete_results_{}_{}_{}.csv".format(architecture.epochs,
+                                                      architecture.learning_rate,
+                                                      architecture.hidden_layer_sizes)
+
+    result_path = crete_result_path(folders.results.discrete, filename)
 
     n_output, n_features, dataset = create_dataset(folders.data, 
                                                    dataset.file)
