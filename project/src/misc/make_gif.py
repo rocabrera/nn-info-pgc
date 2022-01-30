@@ -1,9 +1,19 @@
+import imageio
+import os
 from glob import glob
 
-filenames = sorted([file for file in glob("gif_test2/*")], key=lambda x:int(x.split(".png")[0][17:]))
+root_path = os.getcwd()
+folder_type = "discrete"
+folder_exp = "bins10_epochs20_arch5,3_lr0.1"
 
-import imageio
-with imageio.get_writer('fst_trial.gif', mode='I',duration=0.02) as writer:
+images_path = os.path.join(root_path,"images", folder_type, folder_exp)
+save_path = os.path.join(root_path, "gifs", folder_type, folder_exp+".gif")
+
+
+filenames = sorted([file for file in glob(f"{images_path}/*")], 
+                    key=lambda x:int(os.path.basename(x).split(".png")[0]))
+                    
+with imageio.get_writer(save_path, mode='I',duration=0.02) as writer:
     for filename in filenames:
         image = imageio.imread(filename)
         writer.append_data(image)

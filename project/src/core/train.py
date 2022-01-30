@@ -10,7 +10,7 @@ from models.architecture import ModelArchitecture
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader
+from core.data_parser.datahandler import create_loader, create_dataset
 from distributions.discrete_stats import get_discrete_mutual_information
 
 
@@ -96,3 +96,34 @@ def crete_result_path(folder_results:str, filename:str):
         raise Exception("Experiment already done.")
     
     return result_path
+
+
+def execute_discrete_experiment(architecture, folders, dataset, problem, estimation, device):
+
+    string_arch = str(architecture.hidden_layer_sizes).strip('[]').replace(' ', '')
+    filename = "bins{}_epochs{}_arch{}_lr{}.csv".format(estimation.discrete.bins,
+                                                            architecture.epochs,
+                                                            string_arch,
+                                                            architecture.learning_rate)
+
+    result_path = crete_result_path(folders.results.discrete,
+                                    filename)
+
+    n_output, n_features, dataset = create_dataset(folders.data, 
+                                                   dataset.file)
+    dataloader = create_loader(dataset)
+
+    model = define_model_architecture(n_features, 
+                                      architecture.hidden_layer_sizes, 
+                                      n_output, 
+                                      device)
+          
+    for idx in tqdm(range(1, problem.n_init_random + 1), desc="Initialization", position=0):
+        train_model(train_dl = dataloader, 
+                    model = model, 
+                    n_epochs = architecture.epochs,
+                    learning_rate = architecture.learning_rate,
+                    rand_init_number = idx,
+                    n_bin = estimation.discrete.bins,
+                    result_path = result_path,
+                    device = device)

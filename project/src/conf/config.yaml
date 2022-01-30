@@ -6,4 +6,4 @@ defaults:
   - _self_
 
 problem:
-  n_init_random: 50
+  n_init_random: 2
