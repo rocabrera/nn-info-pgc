@@ -4,10 +4,11 @@ from glob import glob
 
 root_path = os.getcwd()
 folder_type = "discrete"
+dataset = "breast_cancer"
 folder_exp = "bins10_epochs20_arch5,3_lr0.1"
 
-images_path = os.path.join(root_path,"images", folder_type, folder_exp)
-save_path = os.path.join(root_path, "gifs", folder_type, folder_exp+".gif")
+images_path = os.path.join(root_path,"images", folder_type, dataset, folder_exp)
+save_path = os.path.join(root_path, "gifs", folder_type, dataset, folder_exp+".gif")
 
 
 filenames = sorted([file for file in glob(f"{images_path}/*")], 

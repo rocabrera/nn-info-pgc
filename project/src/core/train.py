@@ -84,11 +84,13 @@ def train_model(train_dl, model, n_epochs, learning_rate, rand_init_number, n_bi
             #     accur.append(acc)
             #     print("epoch {}\tloss : {}\t accuracy : {}".format(epoch, loss, acc))
 
-def crete_result_path(folder_results:str, filename:str):
+def crete_result_path(folder_results:str, dataset_name, result_filename:str):
 
-    Path(folder_results).mkdir(parents=True, exist_ok=True)
+    dataset_no_ext, _ = os.path.splitext(os.path.basename(dataset_name))
+    folder_path = os.path.join(folder_results, dataset_no_ext)
+    Path(folder_path).mkdir(parents=True, exist_ok=True)
 
-    result_path = path.join(folder_results, filename)
+    result_path = path.join(folder_path, result_filename)
     if not path.isfile(result_path):
         with open(result_path, "a") as f:
             f.write("epoch,rand_init,layer,T,Y\n")
@@ -101,13 +103,14 @@ def crete_result_path(folder_results:str, filename:str):
 def execute_discrete_experiment(architecture, folders, dataset, problem, estimation, device):
 
     string_arch = str(architecture.hidden_layer_sizes).strip('[]').replace(' ', '')
-    filename = "bins{}_epochs{}_arch{}_lr{}.csv".format(estimation.discrete.bins,
+    result_filename = "bins{}_epochs{}_arch{}_lr{}.csv".format(estimation.discrete.bins,
                                                             architecture.epochs,
                                                             string_arch,
                                                             architecture.learning_rate)
 
     result_path = crete_result_path(folders.results.discrete,
-                                    filename)
+                                    dataset.file,
+                                    result_filename)
 
     n_output, n_features, dataset = create_dataset(folders.data, 
                                                    dataset.file)
