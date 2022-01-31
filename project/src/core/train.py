@@ -116,12 +116,15 @@ def execute_discrete_experiment(architecture, folders, dataset, problem, estimat
                                                    dataset.file)
     dataloader = create_loader(dataset)
 
-    model = define_model_architecture(n_features, 
-                                      architecture.hidden_layer_sizes, 
-                                      n_output, 
-                                      device)
+
           
     for idx in tqdm(range(1, problem.n_init_random + 1), desc="Initialization", position=0):
+
+        model = define_model_architecture(n_features, 
+                                    architecture.hidden_layer_sizes, 
+                                    n_output, 
+                                    device)
+                                    
         train_model(train_dl = dataloader, 
                     model = model, 
                     n_epochs = architecture.epochs,
