@@ -1,3 +1,3 @@
-file: "breast_cancer.csv"
+file: "sintetic/make_circles_3.csv"
 sample_size: 10000  # Currently not in use  
 binary_output: True  # Currently not in use

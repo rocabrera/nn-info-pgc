@@ -1,14 +1,20 @@
 import imageio
 import os
 from glob import glob
+from pathlib import Path
+
 
 root_path = os.getcwd()
 folder_type = "discrete"
-dataset = "breast_cancer"
-folder_exp = "bins10_epochs20_arch5,3_lr0.1"
+dataset = "make_circles_3"
+folder_exp = "bins10_epochs1000_arch5_lr0.1"
 
 images_path = os.path.join(root_path,"images", folder_type, dataset, folder_exp)
-save_path = os.path.join(root_path, "gifs", folder_type, dataset, folder_exp+".gif")
+
+folder_save_path = os.path.join(root_path, "gifs", folder_type, dataset)
+Path(folder_save_path).mkdir(parents=True, exist_ok=True)
+
+save_path = os.path.join(folder_save_path, folder_exp+".gif")
 
 
 filenames = sorted([file for file in glob(f"{images_path}/*")], 
