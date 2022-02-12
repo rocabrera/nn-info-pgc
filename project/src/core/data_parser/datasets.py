@@ -6,7 +6,7 @@ class DefaultDataset(Dataset):
     def __init__(self, X: np.array, y: np.array, transform=None):
 
         self.X = X.astype("float32")
-        self.y = y.astype("float32")
+        self.y = y.astype("int32")
 
         self.n_samples = self.X.shape[0]
         self.transform = transform

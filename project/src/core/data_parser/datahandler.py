@@ -14,7 +14,7 @@ def create_dataset(data_folder, dataset_file_name):
         X = df.drop(columns=["target"])
         dataset = DefaultDataset(X.to_numpy(), y.to_numpy())
         
-    elif ext == ".csv": 
+    elif ext == ".csv":
         df = pd.read_csv(join(data_folder, dataset_file_name))
         y = df["label"].astype("category").cat.codes
         X = df.drop(columns=["label"])

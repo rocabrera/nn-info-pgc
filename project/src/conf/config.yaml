@@ -3,7 +3,13 @@ defaults:
   - dataset: dataset
   - estimation: estimation
   - folders: folders
+  - figures: figures
+  - override hydra/job_logging: custom
   - _self_
 
 problem:
-  n_init_random: 15
+  n_init_random: 20
+
+hydra:
+  run:
+    dir: ./outputs/${now:%Y-%m-%d}

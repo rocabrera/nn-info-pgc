@@ -7,6 +7,7 @@ class Discrete():
 @dataclass(frozen=True)
 class Continuos():
     kernel:str
+    kernel_size:int
 
 @dataclass(frozen=True)
 class Estimation():
