@@ -32,7 +32,7 @@ def main(cfg: Project) -> None:
     folders = cfg.folders
     figures = cfg.figures
     problem = cfg.problem
-    discrete = True
+    discrete = False
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -46,11 +46,13 @@ def main(cfg: Project) -> None:
      figures_root_path, 
      results_root_folder, 
      estimation_param, 
-     result_filename, dataset_name) = setup_parameters(discrete=discrete,
-                                                       estimation=estimation,
-                                                       architecture=architecture,
-                                                       folders=folders,
-                                                       dataset=dataset)
+     result_filename, 
+     dataset_name, 
+     sample_size_pct) = setup_parameters(discrete=discrete,
+                                         estimation=estimation,
+                                         architecture=architecture,
+                                         folders=folders,
+                                         dataset=dataset)
 
     process_begin_time = time()                                         
     try:
@@ -65,6 +67,7 @@ def main(cfg: Project) -> None:
                            dataset=dataset, 
                            problem=problem, 
                            estimation_param=estimation_param, 
+                           sample_size_pct=sample_size_pct,
                            device=device,
                            folders_data=folders.data,
                            result_file_path=result_file_path,
@@ -109,29 +112,38 @@ def setup_parameters(discrete:bool,
                      folders,
                      dataset):
 
+    sample_size_pct = dataset.sample_size_pct
     dataset_name, _ = os.path.splitext(os.path.basename(dataset.file))
     string_arch = str(architecture.hidden_layer_sizes).strip('[]').replace(' ', '')
 
     if discrete:
-        result_filename = "bins{}_epochs{}_arch{}_lr{}.csv".format(estimation.discrete.bins,
-                                                                   architecture.epochs,
-                                                                   string_arch,
-                                                                   architecture.learning_rate)
+        result_filename = "bins{}_epochs{}_arch{}_lr{}_samplepct{}.csv".format(estimation.discrete.bins,
+                                                                               architecture.epochs,
+                                                                               string_arch,
+                                                                               architecture.learning_rate,
+                                                                               sample_size_pct)
         gifs_root_path = folders.gifs.discrete    
         figures_root_path = folders.figures.discrete
         results_root_folder = folders.results.discrete
         estimation_param = estimation.discrete.bins
     else:
-        result_filename = "kernelsize{}_epochs{}_arch{}_lr{}.csv".format(estimation.continuos.kernel_size,
-                                                                         architecture.epochs,
-                                                                         string_arch,
-                                                                         architecture.learning_rate)
+        result_filename = "kernelsize{}_epochs{}_arch{}_lr{}_samplepct{}.csv".format(estimation.continuos.kernel_size,
+                                                                                     architecture.epochs,
+                                                                                     string_arch,
+                                                                                     architecture.learning_rate,
+                                                                                     sample_size_pct)
         gifs_root_path = folders.gifs.continuos
         figures_root_path = folders.figures.continuos
         results_root_folder = folders.results.continuos
         estimation_param = estimation.continuos.kernel_size
 
-    return gifs_root_path, figures_root_path, results_root_folder, estimation_param, result_filename, dataset_name
+    return (gifs_root_path, 
+            figures_root_path, 
+            results_root_folder, 
+            estimation_param, 
+            result_filename, 
+            dataset_name, 
+            sample_size_pct)
 
 if __name__ == "__main__":
     main()

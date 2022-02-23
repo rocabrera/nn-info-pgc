@@ -8,7 +8,7 @@ defaults:
   - _self_
 
 problem:
-  n_init_random: 20
+  n_init_random: 2
 
 hydra:
   run:

@@ -12,7 +12,7 @@ from torchmetrics.functional import auroc
 
 from core.data_parser.datahandler import create_loader, create_dataset
 from distributions.discrete_stats import get_discrete_mutual_information
-import pdb
+from distributions.continuos_stats import get_continuos_mutual_information
 
 
 def define_model_architecture(n_features, hidden_layer, n_output, device):
@@ -61,7 +61,7 @@ def train_model(train_dl,
                                             epoch=epoch, 
                                             rand_init_number=rand_init_number,)
         else:
-            make_conitnuos_information_plane(model=model, 
+            make_continuos_information_plane(model=model, 
                                              inputs=inputs_in_device, 
                                              targets=targets_in_device, 
                                              auc=aucroc_result.cpu().numpy(),
@@ -71,7 +71,7 @@ def train_model(train_dl,
                                              rand_init_number=rand_init_number)
             
 
-def make_conitnuos_information_plane(model: BinaryMLP, 
+def make_continuos_information_plane(model: BinaryMLP, 
                                      inputs: torch.Tensor, 
                                      targets: torch.Tensor, 
                                      auc: float, 
@@ -80,7 +80,30 @@ def make_conitnuos_information_plane(model: BinaryMLP,
                                      epoch: int, 
                                      rand_init_number: int):
 
-    raise Exception("Continuos experiment NotImplemented")
+    with torch.no_grad():
+        output_layers = model.get_layers_output()
+
+        for idx_layer, output_layer in enumerate(output_layers):
+
+            if len(output_layer.shape) == 1:
+                xs = np.hstack([output_layer.reshape(-1,1), inputs.cpu().numpy()])
+                ys = np.hstack([output_layer.reshape(-1,1), targets.cpu().numpy().reshape(-1,1)])
+                n_xs_vector = 1
+            else:
+                xs = np.hstack([output_layer, inputs.cpu().numpy()])
+                ys = np.hstack([output_layer, targets.cpu().numpy().reshape(-1,1)])
+                n_xs_vector = output_layer.shape[1]
+            
+            ixt = get_continuos_mutual_information(pd.DataFrame(xs), 
+                                                   kernel_size=kernel_size, 
+                                                   n_fst_vector=n_xs_vector)
+
+            iyt = get_continuos_mutual_information(pd.DataFrame(ys), 
+                                                   kernel_size=kernel_size, 
+                                                   n_fst_vector=n_xs_vector)
+                                                    
+            with open(result_file_path, "a") as f:
+                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{auc}\n")
 
 
 def make_discrete_information_plane(model: BinaryMLP, 
@@ -121,14 +144,16 @@ def make_discrete_information_plane(model: BinaryMLP,
 def execute_experiment(architecture, 
                        dataset, 
                        problem, 
-                       estimation_param, 
+                       estimation_param,
+                       sample_size_pct, 
                        device:str, 
                        folders_data:str,
                        result_file_path:str,
                        discrete:bool) -> None:
 
     n_output, n_features, torch_dataset = create_dataset(folders_data, 
-                                                         dataset.file)
+                                                         dataset.file,
+                                                         sample_size_pct)
 
     dataloader = create_loader(torch_dataset)
 

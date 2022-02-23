@@ -1,19 +1,17 @@
 import numpy as np
 import pandas as pd
-
-from general_stats import multivariate_gaussian, univariate_gaussian
-
-
-def continuos_marginal_entropy(x: pd.Series, kernel, sigma=1):
-    N_x = len(x)
-    return (-1 / N_x) * sum(np.log2(kernel(i, x, sigma).sum() / N_x) for i in x)
+from distributions.general_stats import multivariate_gaussian
 
 
-def continuos_join_gaussian_entropy(df: pd.DataFrame, sigma=1):
+# def continuos_marginal_entropy(x: pd.Series, kernel, sigma=1):
+#     N_x = len(x)
+#     return (-1 / N_x) * sum(np.log2(kernel(i, x, sigma).sum() / N_x) for i in x)
+
+
+def continuos_join_gaussian_entropy(df: pd.DataFrame, kernel_size=1):
 
     N_x = len(df)
-
-    H = np.power(sigma, 2) * np.eye(len(df.columns))
+    H = np.power(kernel_size, 2) * np.eye(len(df.columns))
     Hinv = np.linalg.pinv(H)
     Hdet = np.linalg.det(H)
 
@@ -23,12 +21,16 @@ def continuos_join_gaussian_entropy(df: pd.DataFrame, sigma=1):
     )
 
 
-def get_continuos_mutual_info(df, sigma=1):
-
-    marginal_entropy = df.apply(
-        continuos_marginal_entropy, args=[univariate_gaussian, sigma]
+def get_continuos_mutual_information(df: pd.DataFrame, kernel_size: int, n_fst_vector: int):
+    marginal_entropy_x = continuos_join_gaussian_entropy(
+        df = df.iloc[:, :n_fst_vector],
+        kernel_size = kernel_size,
+    )
+    marginal_entropy_y = continuos_join_gaussian_entropy(
+        df = df.iloc[:, n_fst_vector:],
+        kernel_size = kernel_size,
     )
 
-    join_entropy = continuos_join_gaussian_entropy(df, sigma=sigma)
+    join_entropy = continuos_join_gaussian_entropy(df, kernel_size=kernel_size)
 
-    return sum(marginal_entropy) - join_entropy
+    return marginal_entropy_x + marginal_entropy_y - join_entropy
