@@ -32,7 +32,7 @@ def main(cfg: Project) -> None:
     folders = cfg.folders
     figures = cfg.figures
     problem = cfg.problem
-    discrete = False
+    discrete = problem.discrete
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 

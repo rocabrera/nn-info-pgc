@@ -9,7 +9,10 @@ defaults:
 
 problem:
   n_init_random: 2
+  discrete: false
 
 hydra:
   run:
     dir: ./outputs/${now:%Y-%m-%d}
+
+

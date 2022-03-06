@@ -7,8 +7,6 @@ plt.style.use('ieee')
 import seaborn as sns
 from tqdm import tqdm
 
-import pdb
-
 def set_legend(ax, epoch):
 
     ax.set_xlabel("I(X,T)", fontsize=12)
@@ -49,8 +47,8 @@ def create_figures(result_file_path:str,
 
         plt.title(f"Época: {epoch}")
         _ = set_legend(g,epoch)
-        ax.set_xlim([xmin-0.2, xmax+0.2])
-        ax.set_ylim([ymin-0.2, ymax+0.2])
+        ax.set_xlim([xmin, xmax])
+        ax.set_ylim([ymin, ymax])
         plt.tight_layout()
         plt.savefig(os.path.join(save_folderpath, f"{epoch}.png"), facecolor='w')
         plt.close()
