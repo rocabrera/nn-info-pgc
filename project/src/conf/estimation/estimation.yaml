@@ -3,4 +3,4 @@ discrete:
 
 continuos:
   kernel: "gaussian"
-  kernel_size: 5
+  kernel_size: 0.5

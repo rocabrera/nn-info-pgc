@@ -82,6 +82,7 @@ def make_continuos_information_plane(model: BinaryMLP,
 
     with torch.no_grad():
         output_layers = model.get_layers_output()
+        #T: [(1000, 12), (1000,7), (1000, 3)]
 
         for idx_layer, output_layer in enumerate(output_layers):
 
@@ -94,11 +95,11 @@ def make_continuos_information_plane(model: BinaryMLP,
                 ys = np.hstack([output_layer, targets.cpu().numpy().reshape(-1,1)])
                 n_xs_vector = output_layer.shape[1]
             
-            ixt = get_continuos_mutual_information(pd.DataFrame(xs), 
+            ixt = get_continuos_mutual_information(array=xs, 
                                                    kernel_size=kernel_size, 
                                                    n_fst_vector=n_xs_vector)
 
-            iyt = get_continuos_mutual_information(pd.DataFrame(ys), 
+            iyt = get_continuos_mutual_information(array=ys, 
                                                    kernel_size=kernel_size, 
                                                    n_fst_vector=n_xs_vector)
                                                     
@@ -159,6 +160,13 @@ def execute_experiment(architecture,
 
     try:
         for idx in tqdm(range(1, problem.n_init_random + 1), desc="Initialization", position=0):
+
+
+            """
+            model tem a função get_layers_output. 
+            Talvez implementar uma função no modelo que me retorna os shapes
+            do output dos layers... get_layers_shapes, o qual eu calculo
+            """
 
             model = define_model_architecture(n_features, 
                                               architecture.hidden_layer_sizes, 

@@ -1,7 +1,10 @@
+from asyncio.log import logger
 import os
 import hydra
 import torch
+import pstats
 import logging
+import cProfile
 from time import time
 from hydra.core.config_store import ConfigStore
 from conf.config import Project
@@ -37,6 +40,7 @@ def main(cfg: Project) -> None:
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     log.info("Executing experiment")
+    log.info(f"Number of initializations: {problem.n_init_random}")
     log.info(f"Number of epochs: {architecture.epochs}")
     log.info(f"Learning rate: {architecture.learning_rate}")
     log.info(f"Architecture: {architecture.hidden_layer_sizes}")
@@ -147,3 +151,13 @@ def setup_parameters(discrete:bool,
 
 if __name__ == "__main__":
     main()
+
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+    # main()
+    # profiler.disable()
+
+    # stats = pstats.Stats(profiler)
+    # stats.sort_stats(pstats.SortKey.TIME)
+    # logger.info(stats.print_stats())
+    # stats.dump_stats(filename="needs_profiling.prof")
