@@ -1,9 +1,8 @@
-from asyncio.log import logger
 import os
 import hydra
 import torch
-import pstats
 import logging
+import pstats
 import cProfile
 from time import time
 from hydra.core.config_store import ConfigStore
@@ -16,11 +15,10 @@ from core.path_creater import (crete_result_folder,
                                crete_gif_folder,
                                write_header_result_experiment)
 
-
 log = logging.getLogger(__name__)
 logging.getLogger('matplotlib').setLevel(logging.ERROR)
 logging.getLogger('PIL').setLevel(logging.ERROR)
-
+logging.getLogger('numba').setLevel(logging.ERROR)
 
 cs = ConfigStore.instance()
 cs.store(name="conf", node=Project)
@@ -37,14 +35,6 @@ def main(cfg: Project) -> None:
     problem = cfg.problem
     discrete = problem.discrete
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-
-    log.info("Executing experiment")
-    log.info(f"Number of initializations: {problem.n_init_random}")
-    log.info(f"Number of epochs: {architecture.epochs}")
-    log.info(f"Learning rate: {architecture.learning_rate}")
-    log.info(f"Architecture: {architecture.hidden_layer_sizes}")
-    log.info(f"Dataset: {dataset.file}")
 
     (gifs_root_path,
      figures_root_path, 
@@ -57,6 +47,16 @@ def main(cfg: Project) -> None:
                                          architecture=architecture,
                                          folders=folders,
                                          dataset=dataset)
+
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    log.info(f"Executing experiment: {'discrete' if discrete else 'continuos' }")
+    log.info(f"Estimation parameter: {estimation_param}")
+    log.info(f"Number of initializations: {problem.n_init_random}")
+    log.info(f"Number of epochs: {architecture.epochs}")
+    log.info(f"Learning rate: {architecture.learning_rate}")
+    log.info(f"Architecture: {architecture.hidden_layer_sizes}")
+    log.info(f"Dataset: {dataset.file}")
 
     process_begin_time = time()                                         
     try:
