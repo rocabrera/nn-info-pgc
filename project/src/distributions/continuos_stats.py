@@ -9,37 +9,15 @@ from distributions.general_stats import multivariate_gaussian
 
 def continuos_join_gaussian_entropy(array: np.array, kernel_size=1):
 
-    """
-    N_x define é o número de amostras em um batch
-    n é o tamanho do vetor X, T ou XT
-
-    Exemplo suponha uma rede com: 
-    - arquitetura: [10, 5]
-    - número de amostras: 1000 (batch)
-    - número de features: 2
-
-    Temos 3 camadas 
-    T: [(1000, 10), (1000,5), (1000, 1)]
-    I(Y, T): [(1000, 11), (1000,6), (1000, 2)]
-
-    O número de colunas muda por isso eu não consigo tirar de dentro do for de forma simples
-    a não ser que eu calcula-se todos Hinv e Hdet coloca-se em alguma estrutura de dados e passa-se isso
-    na hora de calcular.
-
-    
-    1- Vetorizar a função multivariate_gaussian!
-    2- Jogar para fora o Hinv e Hdet
-    3- NORMALIZAR 
-    """
     nrows, ncols = array.shape
 
     H = np.power(kernel_size, 2) * np.eye(ncols)
-    Hinv = np.linalg.pinv(H)
+    Hinv = (1/np.power(kernel_size,2))*np.eye(ncols).astype(np.float32) # nesse caso em especifico
     Hdet = np.power(np.power(kernel_size, 2), ncols)  # nesse caso em especifico
     # pdb.set_trace()
-    
-    return (-1 / nrows) * np.sum(
-        np.log2(np.sum(multivariate_gaussian(i, j, Hinv, Hdet) for j in array) / nrows)
+
+    return (-1 / nrows) * sum(
+        np.log2(sum(multivariate_gaussian(i, j, Hinv, Hdet) for j in array) / nrows)
         for i in array
     )
 
