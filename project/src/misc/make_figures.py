@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 plt.style.use('ieee')
 import seaborn as sns
 from tqdm import tqdm
+from sklearn.preprocessing import MinMaxScaler
 
 def set_legend(ax, epoch):
 
@@ -31,9 +32,11 @@ def create_figures(result_file_path:str,
                    **kwargs:dict) -> None:
 
     df = pd.read_csv(result_file_path, sep=";")
-
+    scaler = MinMaxScaler()
+    df[["I(X,T)", "I(Y,T)"]] = scaler.fit_transform(df[["I(X,T)", "I(Y,T)"]])
     xmax, xmin = df["I(X,T)"].max(), df["I(X,T)"].min() 
-    ymax, ymin = df["I(Y,T)"].max(), df["I(Y,T)"].min() 
+    ymax, ymin = df["I(Y,T)"].max(), df["I(Y,T)"].min()
+     
 
     for epoch in tqdm(range(epochs), desc="Image Epoch"):
         _, ax = plt.subplots(figsize = (6,4))
@@ -47,8 +50,8 @@ def create_figures(result_file_path:str,
 
         plt.title(f"Época: {epoch}")
         _ = set_legend(g,epoch)
-        ax.set_xlim([xmin, xmax])
-        ax.set_ylim([ymin, ymax])
+        ax.set_xlim([xmin-0.1, xmax+0.1])
+        ax.set_ylim([ymin-0.1, ymax+0.1])
         plt.tight_layout()
         plt.savefig(os.path.join(save_folderpath, f"{epoch}.png"), facecolor='w')
         plt.close()
