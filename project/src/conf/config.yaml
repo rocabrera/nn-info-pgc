@@ -8,7 +8,7 @@ defaults:
   - _self_
 
 problem:
-  n_init_random: 2
+  n_init_random: 10
   discrete: false
 
 hydra:
