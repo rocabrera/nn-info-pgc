@@ -1,3 +1,4 @@
+import torch as tf
 import pandas as pd
 from os.path import splitext, join
 from core.data_parser.datasets import DefaultDataset
@@ -27,11 +28,22 @@ def create_dataset(data_folder, dataset_file_name, sample_size_pct):
     return len(y.unique()), X.shape[1], dataset
 
 
-def create_loader(dataset, batch_pct:float=1.0):
+def create_loaders(dataset, batch_pct:float=1.0, valid_pct=0.1):
 
-    batch_size = int(len(dataset)*batch_pct) 
 
-    dataloader = DataLoader(dataset = dataset,
-                            shuffle = True,
-                            batch_size = batch_size)
-    return dataloader 
+    dataset_size = len(dataset)
+    valid_n = int(valid_pct*dataset_size)
+
+    valid_dataset, train_dataset = tf.utils.data.random_split(dataset, [valid_n, (dataset_size-valid_n)])
+
+    train_batch_size = int(len(train_dataset)*batch_pct) 
+    train_dataloader = DataLoader(dataset = train_dataset,
+                                  shuffle = True,
+                                  batch_size = train_batch_size)
+
+    valid_batch_size = int(len(valid_dataset)*batch_pct) 
+    valid_dataloader = DataLoader(dataset = valid_dataset,
+                                  shuffle = False,
+                                  batch_size = valid_batch_size)
+
+    return train_dataloader, valid_dataloader 

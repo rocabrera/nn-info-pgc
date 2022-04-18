@@ -1,4 +1,3 @@
-import os
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -10,7 +9,7 @@ import torch
 import torch.nn as nn
 from torchmetrics.functional import auroc
 
-from core.data_parser.datahandler import create_loader, create_dataset
+from core.data_parser.datahandler import create_loaders, create_dataset
 from distributions.discrete_stats import get_discrete_mutual_information
 from distributions.continuos_stats import get_continuos_mutual_information
 
@@ -26,6 +25,7 @@ def define_model_architecture(n_features, hidden_layer, n_output, device):
 
 # train the model
 def train_model(train_dl, 
+                valid_dl,
                 model, 
                 n_epochs, 
                 learning_rate, 
@@ -34,37 +34,78 @@ def train_model(train_dl,
                 result_file_path, 
                 device,
                 discrete):
+
     # define the optimization
     criterion = nn.BCELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
     
+    train_loss_batchs = []
+    train_auc_batchs = [] 
+    valid_loss_batchs = []
+    valid_auc_batchs = [] 
+
     for epoch in tqdm(range(n_epochs), desc="Epochs", position=1, leave=False):
 
-        for i, (inputs, targets) in enumerate(train_dl):
-            inputs_in_device = inputs.to(device)
-            targets_in_device = targets.to(device, dtype=torch.float32)
+        for _, (inputs, targets) in enumerate(train_dl):
+            inputs_train_in_device = inputs.to(device)
+            targets_train_in_device = targets.to(device, dtype=torch.float32)
             
             optimizer.zero_grad() # clear the gradients
-            yhat = model(inputs_in_device) # compute the model output
-            loss = criterion(yhat, targets_in_device) # calculate loss
-            loss.backward() 
+            yhat = model(inputs_train_in_device) # compute the model output
+            train_loss = criterion(yhat, targets_train_in_device) # calculate loss
+            train_loss.backward() 
             optimizer.step()
 
-        aucroc_result = auroc(yhat, targets_in_device.to(torch.int), pos_label=1)
+            train_auc_batchs.append(auroc(yhat, targets_train_in_device.to(torch.int), pos_label=1)
+                                    .cpu()
+                                    .numpy())
+
+            train_loss_batchs.append(train_loss.item())
+
+        train_auc_epoch = np.mean(train_auc_batchs)
+        train_loss_epoch = np.mean(train_loss_batchs)
+
+
+        model.eval()
+        with torch.no_grad():
+            for input_valid, target_valid in valid_dl:
+                input_valid_in_device = input_valid.to(device)
+                targets_valid_in_device = target_valid.to(device, dtype=torch.float32)
+                yhat_valid = model(input_valid_in_device)
+                valid_loss = criterion(yhat_valid, targets_valid_in_device)
+                valid_auc_batchs.append(auroc(yhat_valid, targets_valid_in_device.to(torch.int), pos_label=1)
+                                        .cpu()
+                                        .numpy())
+
+                valid_loss_batchs.append(valid_loss.item())
+
+        valid_auc_epoch = np.mean(valid_auc_batchs)
+        valid_loss_epoch = np.mean(valid_loss_batchs)
+
+
+
+        _ = model(inputs_train_in_device) # compute the model output
+        
         if discrete:
             make_discrete_information_plane(model=model, 
-                                            inputs=inputs_in_device, 
-                                            targets=targets_in_device, 
-                                            auc=aucroc_result.cpu().numpy(),
+                                            inputs=inputs_train_in_device, 
+                                            targets=targets_train_in_device, 
+                                            valid_auc=0,
+                                            train_auc=train_auc_epoch,
+                                            valid_loss=0,
+                                            train_loss=train_loss_epoch,
                                             n_bin=estimation_param, 
                                             result_file_path=result_file_path, 
                                             epoch=epoch, 
                                             rand_init_number=rand_init_number,)
         else:
             make_continuos_information_plane(model=model, 
-                                             inputs=inputs_in_device, 
-                                             targets=targets_in_device, 
-                                             auc=aucroc_result.cpu().numpy(),
+                                             inputs=inputs_train_in_device, 
+                                             targets=targets_train_in_device, 
+                                             valid_auc=valid_auc_epoch,
+                                             train_auc=train_auc_epoch,
+                                             valid_loss=valid_loss_epoch,
+                                             train_loss=train_loss_epoch,
                                              kernel_size=estimation_param, 
                                              result_file_path=result_file_path, 
                                              epoch=epoch, 
@@ -74,7 +115,10 @@ def train_model(train_dl,
 def make_continuos_information_plane(model: BinaryMLP, 
                                      inputs: torch.Tensor, 
                                      targets: torch.Tensor, 
-                                     auc: float, 
+                                     valid_auc:float,
+                                     train_auc:float,
+                                     valid_loss:float,
+                                     train_loss:float,
                                      kernel_size: int, 
                                      result_file_path: str, 
                                      epoch: int, 
@@ -104,13 +148,17 @@ def make_continuos_information_plane(model: BinaryMLP,
                                                    n_fst_vector=n_xs_vector)
                                                     
             with open(result_file_path, "a") as f:
-                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{auc}\n")
+                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{valid_auc};{train_auc};{valid_loss};{train_loss}\n")
+
 
 
 def make_discrete_information_plane(model: BinaryMLP, 
                                     inputs: torch.Tensor, 
                                     targets: torch.Tensor, 
-                                    auc: float, 
+                                    valid_auc:float,
+                                    train_auc:float,
+                                    valid_loss:float,
+                                    train_loss:float,
                                     n_bin: int, 
                                     result_file_path: str, 
                                     epoch: int, 
@@ -139,7 +187,7 @@ def make_discrete_information_plane(model: BinaryMLP,
                                                   n_fst_vector=n_xs_vector)
                                                     
             with open(result_file_path, "a") as f:
-                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{auc}\n")
+                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{valid_auc};{train_auc};{valid_loss};{train_loss}\n")
 
 
 def execute_experiment(architecture, 
@@ -147,6 +195,8 @@ def execute_experiment(architecture,
                        problem, 
                        estimation_param,
                        sample_size_pct, 
+                       batch_pct,
+                       valid_pct,
                        device:str, 
                        folders_data:str,
                        result_file_path:str,
@@ -156,7 +206,9 @@ def execute_experiment(architecture,
                                                          dataset.file,
                                                          sample_size_pct)
 
-    dataloader = create_loader(torch_dataset)
+    train_dataloader, valid_dataloader = create_loaders(dataset=torch_dataset, 
+                                                        batch_pct=batch_pct, 
+                                                        valid_pct=valid_pct)
 
     try:
         for idx in tqdm(range(1, problem.n_init_random + 1), desc="Initialization", position=0):
@@ -173,7 +225,8 @@ def execute_experiment(architecture,
                                               n_output, 
                                               device)
                                         
-            train_model(train_dl = dataloader, 
+            train_model(train_dl = train_dataloader, 
+                        valid_dl = valid_dataloader,
                         model = model, 
                         n_epochs = architecture.epochs,
                         learning_rate = architecture.learning_rate,

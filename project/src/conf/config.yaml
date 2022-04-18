@@ -9,7 +9,7 @@ defaults:
 
 problem:
   n_init_random: 10
-  discrete: false
+  discrete: true
 
 hydra:
   run:

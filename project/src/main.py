@@ -43,8 +43,8 @@ def main(cfg: Project) -> None:
      result_filename, 
      dataset_name, 
      sample_size_pct) = setup_parameters(discrete=discrete,
-                                         estimation=estimation,
                                          architecture=architecture,
+                                         estimation=estimation,
                                          folders=folders,
                                          dataset=dataset)
 
@@ -57,6 +57,10 @@ def main(cfg: Project) -> None:
     log.info(f"Learning rate: {architecture.learning_rate}")
     log.info(f"Architecture: {architecture.hidden_layer_sizes}")
     log.info(f"Dataset: {dataset.file}")
+    log.info(f"Dataset Percentage: {dataset.sample_size_pct}")
+    log.info(f"Batch Percentage: {architecture.batch_pct}")
+    log.info(f"Percentage Valid Dataset: {dataset.valid_pct}")
+
 
     process_begin_time = time()                                         
     try:
@@ -72,10 +76,13 @@ def main(cfg: Project) -> None:
                            problem=problem, 
                            estimation_param=estimation_param, 
                            sample_size_pct=sample_size_pct,
+                           batch_pct=architecture.batch_pct,
+                           valid_pct=dataset.valid_pct,
                            device=device,
                            folders_data=folders.data,
                            result_file_path=result_file_path,
                            discrete=discrete)
+                           
         experiment_elapsed_time = time() - experiment_time
         log.info(f"Experiment done. Elapsed time: {round(experiment_elapsed_time,2)}")
 
