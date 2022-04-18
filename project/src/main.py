@@ -14,6 +14,12 @@ from core.path_creater import (crete_result_folder,
                                crete_image_folder, 
                                crete_gif_folder,
                                write_header_result_experiment)
+import random
+import numpy as np
+
+random.seed(123)
+np.random.seed(123)
+torch.manual_seed(123)
 
 log = logging.getLogger(__name__)
 logging.getLogger('matplotlib').setLevel(logging.ERROR)
