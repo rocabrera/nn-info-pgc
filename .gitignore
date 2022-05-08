@@ -1,6 +1,7 @@
 # my ignore
 **/images/discrete*
 **/images/continuos*
+**/data/
 **/outputs/
 
 # Byte-compiled / optimized / DLL files
