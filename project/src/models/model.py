@@ -10,7 +10,7 @@ class MLP(nn.Module):
         self.camadas = nn.ModuleList([nn.Linear(before, after)
                                       for before, after in model_arch.parse_architecture()])  # achar nomes melhores
         self.activation_function = model_arch.activation_function
-
+        self.last_activation_function = model_arch.last_activation_function
         Path("outputs").mkdir(parents=True, exist_ok=True)
         self.layers_output = None
 
@@ -24,13 +24,14 @@ class MLP(nn.Module):
         out = self.camadas[0](X)
         with torch.no_grad():
             self.layers_output.append(out.cpu().numpy())
+            
         for camada in self.camadas[1:]:
             out = self.activation_function(out)
             out = camada(out)
             with torch.no_grad():
                 self.layers_output.append(out.cpu().numpy())
 
-        return out
+        return self.last_activation_function(out)
 
 class BinaryMLP(nn.Module):
 

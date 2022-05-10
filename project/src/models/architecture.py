@@ -11,6 +11,7 @@ class ModelArchitecture:
     output_size: int = 7  # Quantidade de classes do dataset
     activation_function: List = field(default_factory=[nn.ReLU()])
                             # list como atributo requer default_factory, vi solução em stackexchange
+    last_activation_function = nn.Sigmoid
 
     def parse_architecture(self) -> List[Tuple[int, int]]:
         aux = [self.input_size] + list(self.hidden_size_per_layer) + [self.output_size]
