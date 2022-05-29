@@ -1,6 +1,0 @@
-discrete:
-  bins: 10
-
-continuos:
-  kernel: "gaussian"
-  kernel_size: 0.001

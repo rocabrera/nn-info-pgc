@@ -1,4 +1,0 @@
-file: "sintetic/make_circles_3.csv"
-valid_pct: 0.1
-sample_size_pct: 1
-binary_output: True  # Currently not in use

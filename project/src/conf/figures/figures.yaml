@@ -1,5 +1,0 @@
-scatterplot_aesthetics:
-  alpha: 0.8
-  edgecolor: "black"
-  palette: "muted"
-  linewidth: 1.2

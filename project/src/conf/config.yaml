@@ -1,18 +1,51 @@
 defaults:
-  - architecture: architecture
-  - dataset: dataset
-  - estimation: estimation
-  - folders: folders
-  - figures: figures
   - override hydra/job_logging: custom
   - _self_
 
 problem:
-  n_init_random: 10
+  n_init_random: 2
   discrete: true
+
+estimation:
+  discrete:
+    bins: 10
+
+  continuos:
+    kernel: "gaussian"
+    kernel_size: 0.001
+
+architecture: 
+  epochs: 50
+  batch_pct: 1.0
+  learning_rate: 0.15
+  hidden_layer_sizes:
+    - 5
+
+dataset: 
+  file: "sintetic/make_circles_3.csv"
+  valid_pct: 0.1
+  sample_size_pct: 1
+  binary_output: True  # Currently not in use
+
+figures:
+  scatterplot_aesthetics:
+    alpha: 0.8
+    edgecolor: "black"
+    palette: "muted"
+    linewidth: 1.2
+
+folders:
+  data: "${hydra:runtime.cwd}/data"
+  results: 
+    discrete: "${hydra:runtime.cwd}/results/discrete"
+    continuos: "${hydra:runtime.cwd}/results/continuos"
+  figures:
+    discrete: "${hydra:runtime.cwd}/images/discrete"
+    continuos: "${hydra:runtime.cwd}/images/continuos"
+  gifs:
+    discrete: "${hydra:runtime.cwd}/gifs/discrete"
+    continuos: "${hydra:runtime.cwd}/gifs/continuos"
 
 hydra:
   run:
     dir: ./outputs/${now:%Y-%m-%d}
-
-

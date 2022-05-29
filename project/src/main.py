@@ -5,8 +5,6 @@ import logging
 import pstats
 import cProfile
 from time import time
-from hydra.core.config_store import ConfigStore
-from conf.config import Project
 
 from misc.make_figures import create_figures, create_gif
 from core.train import execute_experiment
@@ -26,12 +24,9 @@ logging.getLogger('matplotlib').setLevel(logging.ERROR)
 logging.getLogger('PIL').setLevel(logging.ERROR)
 logging.getLogger('numba').setLevel(logging.ERROR)
 
-cs = ConfigStore.instance()
-cs.store(name="conf", node=Project)
-
 
 @hydra.main(config_path="conf", config_name="config.yaml")
-def main(cfg: Project) -> None:
+def main(cfg) -> None:
 
     architecture = cfg.architecture
     dataset = cfg.dataset
@@ -66,7 +61,6 @@ def main(cfg: Project) -> None:
     log.info(f"Dataset Percentage: {dataset.sample_size_pct}")
     log.info(f"Batch Percentage: {architecture.batch_pct}")
     log.info(f"Percentage Valid Dataset: {dataset.valid_pct}")
-
 
     process_begin_time = time()                                         
     try:
