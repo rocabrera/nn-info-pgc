@@ -3,8 +3,8 @@ defaults:
   - _self_
 
 problem:
-  n_init_random: 2
-  discrete: true
+  n_init_random: 10
+  discrete: false
 
 estimation:
   discrete:
@@ -12,10 +12,10 @@ estimation:
 
   continuos:
     kernel: "gaussian"
-    kernel_size: 0.001
+    kernel_size: 0.01
 
-architecture: 
-  epochs: 50
+architecture:
+  epochs: 200
   batch_pct: 1.0
   learning_rate: 0.15
   hidden_layer_sizes:

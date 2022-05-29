@@ -19,7 +19,8 @@ def make_continuos_information_plane(model: BinaryMLP,
 
     with torch.no_grad():
         output_layers = model.get_layers_output()
-        #T: [(1000, 12), (1000,7), (1000, 3)]
+        weights_stats = [(name, torch.mean(param).item(), torch.std(param).item()) 
+                         for name, param in model.named_parameters()]
 
         for idx_layer, output_layer in enumerate(output_layers):
 
@@ -40,8 +41,18 @@ def make_continuos_information_plane(model: BinaryMLP,
                                                    kernel_size=kernel_size, 
                                                    n_fst_vector=n_xs_vector)
                                                     
+            std_bias = None
+            mean_bias = None 
+            for name, mean, std in list(filter(lambda x: f"{idx_layer}" in x[0], weights_stats)):
+                if "bias" in name:
+                    std_bias = std
+                    mean_bias = mean
+                elif "weight" in name:
+                    std_weight = std               
+                    mean_weight = mean
+            
             with open(result_file_path, "a") as f:
-                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{valid_auc};{train_auc};{valid_loss};{train_loss}\n")
+                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{valid_auc};{train_auc};{valid_loss};{train_loss};{mean_weight};{std_weight};{mean_bias};{std_bias}\n")
 
 
 
@@ -57,8 +68,12 @@ def make_discrete_information_plane(model: BinaryMLP,
                                     epoch: int, 
                                     rand_init_number: int) -> None:
 
+
     with torch.no_grad():
         output_layers = model.get_layers_output()
+        weights_stats = [(name, torch.mean(param).item(), torch.std(param).item()) 
+                         for name, param in model.named_parameters()]
+
 
         for idx_layer, output_layer in enumerate(output_layers):
 
@@ -78,7 +93,17 @@ def make_discrete_information_plane(model: BinaryMLP,
             iyt = get_discrete_mutual_information(pd.DataFrame(ys), 
                                                   n_bin=n_bin, 
                                                   n_fst_vector=n_xs_vector)
-                                                    
+                                                  
+            std_bias = None
+            mean_bias = None 
+            for name, mean, std in list(filter(lambda x: f"{idx_layer}" in x[0], weights_stats)):
+                if "bias" in name:
+                    std_bias = std
+                    mean_bias = mean
+                elif "weight" in name:
+                    std_weight = std               
+                    mean_weight = mean
+            
             with open(result_file_path, "a") as f:
-                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{valid_auc};{train_auc};{valid_loss};{train_loss}\n")
+                f.write(f"{epoch};{rand_init_number};{idx_layer+1};{ixt};{iyt};{valid_auc};{train_auc};{valid_loss};{train_loss};{mean_weight};{std_weight};{mean_bias};{std_bias}\n")
 

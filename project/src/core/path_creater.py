@@ -37,7 +37,7 @@ def write_header_result_experiment(result_folder:str,
 
     file_path = os.path.join(result_folder, result_filename)
     with open(file_path, "a") as f:
-        f.write("epoch;rand_init;layer;I(X,T);I(Y,T);valid_auc;train_auc;valid_loss;train_loss\n")
+        f.write("epoch;rand_init;layer;I(X,T);I(Y,T);valid_auc;train_auc;valid_loss;train_loss;mean_weight_layer;std_weight_layer;mean_bias_layer;std_bias_layer\n")
     # if not os.path.exists(file_path):
     #     with open(file_path, "a") as f:
     #         f.write("epoch;rand_init;layer;I(X,T);I(Y,T);accuracy\n")
