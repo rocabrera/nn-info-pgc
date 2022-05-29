@@ -7,7 +7,7 @@ import cProfile
 from time import time
 
 from misc.make_figures import create_figures, create_gif
-from core.train import execute_experiment
+from core.experiment import execute_experiment
 from core.path_creater import (crete_result_folder, 
                                crete_image_folder, 
                                crete_gif_folder,
@@ -148,12 +148,12 @@ def setup_parameters(discrete:bool,
         results_root_folder = folders.results.continuos
         estimation_param = estimation.continuos.kernel_size
 
-    return (gifs_root_path, 
-            figures_root_path, 
-            results_root_folder, 
-            estimation_param, 
-            result_filename, 
-            dataset_name, 
+    return (gifs_root_path,
+            figures_root_path,
+            results_root_folder,
+            estimation_param,
+            result_filename,
+            dataset_name,
             sample_size_pct)
 
 if __name__ == "__main__":
