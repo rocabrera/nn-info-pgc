@@ -7,6 +7,8 @@ plt.style.use('ieee')
 import seaborn as sns
 from tqdm import tqdm
 from sklearn.preprocessing import MinMaxScaler
+from src.misc.project_figure_analysis import normalize_dataset
+
 
 def set_legend(ax, epoch):
 
@@ -32,8 +34,7 @@ def create_figures(result_file_path:str,
                    **kwargs:dict) -> None:
 
     df = pd.read_csv(result_file_path, sep=";")
-    scaler = MinMaxScaler()
-    df[["I(X,T)", "I(Y,T)"]] = scaler.fit_transform(df[["I(X,T)", "I(Y,T)"]])
+    df = normalize_dataset(df)
     xmax, xmin = df["I(X,T)"].max(), df["I(X,T)"].min() 
     ymax, ymin = df["I(Y,T)"].max(), df["I(Y,T)"].min()
      
