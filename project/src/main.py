@@ -92,6 +92,7 @@ def main(cfg) -> None:
                                                dataset_name=dataset_name, 
                                                result_filename=result_filename)
         log.info(f"Image Folder created successfully at: {image_folder_path}")
+        log.info(figures.scatterplot_aesthetics)
         create_figures(result_file_path=result_file_path,
                        epochs=architecture.epochs,
                        save_folderpath=image_folder_path,

@@ -12,17 +12,17 @@ estimation:
 
   continuos:
     kernel: "gaussian"
-    kernel_size: 0.01
+    kernel_size: 0.1
 
 architecture:
   epochs: 200
   batch_pct: 1.0
   learning_rate: 0.15
   hidden_layer_sizes:
-    - 5
-    - 4
+    - 5 
+
 dataset: 
-  file: "sintetic/make_circles_3.csv"
+  file: "sintetic/make_circles_4.csv"
   valid_pct: 0.1
   sample_size_pct: 1
   binary_output: True  # Currently not in use
