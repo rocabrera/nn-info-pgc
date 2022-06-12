@@ -38,7 +38,6 @@ def create_figures(result_file_path:str,
     xmax, xmin = df["I(X,T)"].max(), df["I(X,T)"].min() 
     ymax, ymin = df["I(Y,T)"].max(), df["I(Y,T)"].min()
      
-    print(kwargs)
     for epoch in tqdm(range(epochs), desc="Image Epoch"):
         _, ax = plt.subplots(figsize = (6,4))
 
