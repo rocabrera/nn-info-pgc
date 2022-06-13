@@ -1,6 +1,8 @@
 # my ignore
 **/images/discrete*
 **/images/continuos*
+**/images/analysis*
+
 **/outputs/
 **/.vscode/
 **/gifs/
