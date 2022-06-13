@@ -1,3 +1,4 @@
+import os
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
@@ -35,7 +36,7 @@ def normalize_dataset(df):
     
 
 
-def create_lineplot_rand_init(df):
+def create_lineplot_rand_init(df, savepath=None):
     scaler = LogNorm()
     cmap = sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True)
     cmap.colors = scaler(cmap.colors)
@@ -51,9 +52,14 @@ def create_lineplot_rand_init(df):
                     marker="o",
                     palette=cmap,
                     legend=None)
-    plt.show()
+    if savepath:
+        _, ext = os.path.splitext(savepath)
+        plt.savefig(savepath, format="svg")
+        plt.close()
+    else:
+        plt.show()
 
-def create_scatter_mean_trajectory(df):
+def create_scatter_mean_trajectory(df, savepath=None):
     
     scaler = LogNorm()
     cmap = sns.cubehelix_palette(start=.5, rot=-.75, as_cmap=True)
@@ -77,4 +83,9 @@ def create_scatter_mean_trajectory(df):
     plt.xlim([-0.05, 1.05])
     plt.ylim([-0.05, 1.05])
     plt.tight_layout()
-    plt.show()
+    if savepath:
+        _, ext = os.path.splitext(savepath)
+        plt.savefig(savepath, format="svg")
+        plt.close()
+    else:
+        plt.show()
