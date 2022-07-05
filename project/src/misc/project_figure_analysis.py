@@ -76,7 +76,7 @@ def create_lineplot_rand_init(df, savepath=None):
     last_element_legend.set_text(fr"$\geq$ {last_element_legend.get_text()}")
     if savepath:
         _, ext = os.path.splitext(savepath)
-        plt.savefig(savepath, format="svg", bbox_inches='tight')
+        plt.savefig(savepath, format=ext[1:], bbox_inches='tight')
         plt.close()
     else:
         plt.show()
@@ -107,7 +107,7 @@ def create_scatter_mean_trajectory(df, savepath=None):
     plt.tight_layout()
     if savepath:
         _, ext = os.path.splitext(savepath)
-        plt.savefig(savepath, format="svg")
+        plt.savefig(savepath, format=ext[1:])
         plt.close()
     else:
         plt.show()
@@ -142,7 +142,7 @@ def create_weights_per_epoch(df, savepath=None):
     
     if savepath:
         _, ext = os.path.splitext(savepath)
-        plt.savefig(savepath, format="svg")
+        plt.savefig(savepath, format=ext[1:])
         plt.close()
     else:
         plt.show()
@@ -174,7 +174,7 @@ def create_information_per_epoch(df, savepath=None):
     
     if savepath:
         _, ext = os.path.splitext(savepath)
-        plt.savefig(savepath, format="svg")
+        plt.savefig(savepath, format=ext[1:])
         plt.close()
     else:
         plt.show()
@@ -206,7 +206,7 @@ def create_performance_per_epoch(df, savepath=None):
     
     if savepath:
         _, ext = os.path.splitext(savepath)
-        plt.savefig(savepath, format="svg")
+        plt.savefig(savepath, format=ext[1:])
         plt.close()
     else:
         plt.show()
